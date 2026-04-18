@@ -6,7 +6,7 @@ add_subdirectory(tests)
 add_custom_target(
     run_ex2
     COMMAND TEST_TLM
-    DEPENDS EX2
+    DEPENDS TLM
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     USES_TERMINAL
 )
