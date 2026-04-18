@@ -51,37 +51,55 @@ tlm::ErrorType tlm::TimeLineManager::recordRecentEvent(Event e) {
     return tlm::ErrorType::SUCCESS;
 }
 
+/*
+    Finds `leftID` and then checks it's neighbours
+    If it finds `rigthID`, then it will insert `e` between them
+*/
 tlm::ErrorType tlm::TimeLineManager::insertEventBetween(unsigned int leftId, unsigned int rightId, Event e) {
     if (leftId == rightId) return tlm::ErrorType::FAILURE_IDENTICAL_IDS;
 
     CHECK_DUPPLICATE_ID(e.id);
 
     std::optional<Node<Event>*> current = search_event_by_id(leftId);
+    if (!current.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID; 
+    if (current.value()->next == nullptr && current.value()->prev == nullptr) return tlm::ErrorType::FAILURE; // if list has only one element
+    
     Node<Event>* neighbour = nullptr;
 
-    if (!current.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID; 
-
-    if (current.value()->next == nullptr && current.value()->prev == nullptr) return tlm::ErrorType::FAILURE; // if list has only one element
-    else if (current.value()->next != nullptr && current.value()->next->info.id == rightId) neighbour = current.value()->next; // if right id is next
-    else if (current.value()->prev != nullptr && current.value()->prev->info.id == rightId) neighbour = current.value()->prev; // if right id is prev
-    else return tlm::ErrorType::FAILURE_IDS_NOT_ADJACENT;
+    bool is_neighbour_right = (current.value()->next != nullptr && current.value()->next->info.id == rightId);
+    bool is_neightbour_left = (current.value()->prev != nullptr && current.value()->prev->info.id == rightId);
 
     Node<Event>* newEvent = new Node<Event>;
     newEvent->info = e;
 
-    // make connections for inserted event
-    newEvent->next = neighbour;
-    newEvent->prev = current.value();
+    if (is_neighbour_right) {
+        neighbour = current.value()->next;
 
-    // replace connections of neighbours
-    current.value()->next = newEvent;
-    neighbour->prev = newEvent;
+        // make connections for inserted event
+        newEvent->next = neighbour;
+        newEvent->prev = current.value();
+
+        // replace connections of neighbours
+        current.value()->next = newEvent;
+        neighbour->prev = newEvent;
+    } else if (is_neightbour_left) {
+        neighbour = current.value()->prev;
+
+        // make connections for inserted event
+        newEvent->next = current.value();
+        newEvent->prev = neighbour;
+
+        // replace connections of neighbours
+        current.value()->prev = newEvent;
+        neighbour->next = newEvent;
+    } 
+    else return tlm::ErrorType::FAILURE_IDS_NOT_ADJACENT;
 
     return tlm::ErrorType::SUCCESS;
 }
 
 tlm::ErrorType tlm::TimeLineManager::relocateEvent(unsigned int idToMove, unsigned int newNeighborID, bool before) {
-    if (idToMove == newNeighborID) return tlm::ErrorType::FAILURE_INVALID_ID;
+    if (idToMove == newNeighborID) return tlm::ErrorType::FAILURE_IDENTICAL_IDS;
 
     std::optional<Node<Event>*> to_move = search_event_by_id(idToMove);
     if (!to_move.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID;

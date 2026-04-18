@@ -86,7 +86,7 @@ namespace tlm {
             /// @param before `true` if the event will be moved before the neighbor, `false` if the event will be moved after the neighbor
             /// @return `tlm::ErrorType::FAILURE_INVALID_ID` - if either of the IDs don't correspond to existing events,
             /// 
-            /// `tlm::ErrorType::FAILURE_INVALID_ID` - if both IDs are identical,
+            /// `tlm::ErrorType::FAILURE_IDENTICAL_IDS` - if both IDs are identical,
             /// 
             /// `tlm::ErrorType::SUCCESS` - if the event was successfully moved
             ErrorType relocateEvent(unsigned int idToMove, unsigned int newNeighborID, bool before);
