@@ -1,10 +1,8 @@
 #include "TimeLineManager.hpp"
 
-#include <iostream>
-
 
 ostream& tlm::operator<<(ostream& os, const Event& e) {
-    os << "[ " << e.id << " | " << e.description << " | " << e.year << " | " << e.impact << " ]";
+    os << "[ " << e.getId() << " | " << e.getDescription() << " | " << e.getYear() << " | " << e.getImpact() << " ]";
     return os;
 }
 
@@ -13,7 +11,7 @@ std::optional<Node<tlm::Event>*> tlm::TimeLineManager::search_event_by_id(unsign
     Node<Event>* current = list.pfirst;
 
     while (current != nullptr) {
-        if (current->info.id == id) {
+        if (current->info.getId() == id) {
             return std::make_optional<Node<Event>*>(current);
         }
         current = current->next;
@@ -40,13 +38,13 @@ tlm::ErrorType tlm::TimeLineManager::recordRecentEvent(unsigned int id, const ch
 }
 
 tlm::ErrorType tlm::TimeLineManager::recordAncientEvent(Event e) {
-    CHECK_DUPPLICATE_ID(e.id);
+    CHECK_DUPPLICATE_ID(e.getId());
     list.addFirst(e);
     return tlm::ErrorType::SUCCESS;
 }
 
 tlm::ErrorType tlm::TimeLineManager::recordRecentEvent(Event e) {
-    CHECK_DUPPLICATE_ID(e.id);
+    CHECK_DUPPLICATE_ID(e.getId());
     list.addLast(e);
     return tlm::ErrorType::SUCCESS;
 }
@@ -58,7 +56,7 @@ tlm::ErrorType tlm::TimeLineManager::recordRecentEvent(Event e) {
 tlm::ErrorType tlm::TimeLineManager::insertEventBetween(unsigned int leftId, unsigned int rightId, Event e) {
     if (leftId == rightId) return tlm::ErrorType::FAILURE_IDENTICAL_IDS;
 
-    CHECK_DUPPLICATE_ID(e.id);
+    CHECK_DUPPLICATE_ID(e.getId());
 
     std::optional<Node<Event>*> current = search_event_by_id(leftId);
     if (!current.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID; 
@@ -66,8 +64,8 @@ tlm::ErrorType tlm::TimeLineManager::insertEventBetween(unsigned int leftId, uns
     
     Node<Event>* neighbour = nullptr;
 
-    bool is_neighbour_right = (current.value()->next != nullptr && current.value()->next->info.id == rightId);
-    bool is_neightbour_left = (current.value()->prev != nullptr && current.value()->prev->info.id == rightId);
+    bool is_neighbour_right = (current.value()->next != nullptr && current.value()->next->info.getId() == rightId);
+    bool is_neightbour_left = (current.value()->prev != nullptr && current.value()->prev->info.getId() == rightId);
 
     Node<Event>* newEvent = new Node<Event>;
     newEvent->info = e;
@@ -168,7 +166,7 @@ unsigned int tlm::TimeLineManager::computeTotalImpact() {
 
     Node<Event>* current = list.pfirst;
     while (current != nullptr) {
-        total += current->info.impact;
+        total += current->info.getImpact();
         current = current->next;
     }
 
@@ -186,8 +184,8 @@ void tlm::TimeLineManager::stabilizeTimeline(int threshold) {
     Node<Event>* end_of_sort_location = list.pfirst;
 
     while (current != nullptr) {
-        if (current->info.impact >= threshold) {
-            relocateEvent(current->info.id, end_of_sort_location->info.id, true);
+        if (current->info.getImpact() >= threshold) {
+            relocateEvent(current->info.getId(), end_of_sort_location->info.getId(), true);
             end_of_sort_location = current->next;
         }
 

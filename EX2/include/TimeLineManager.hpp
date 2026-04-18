@@ -1,8 +1,9 @@
 #pragma once
 
-#include "LinkedList.h"
-
+#include <iostream>
 #include <optional>
+
+#include "LinkedList.h"
 
 
 namespace tlm {
@@ -15,17 +16,24 @@ namespace tlm {
         FAILURE
     };
     
-    /// @brief Event
+    /// @struct Event
     /// 
-    /// A structure representing an event in a timeline
+    /// @brief A structure representing an event in a timeline
     struct Event {
-        Event() : id(0), description(""), year(0), impact(0) {};
-        Event(int id, const char* description, int year, int impact) : id(id), description(description), year(year), impact(impact) {}
-        
-        unsigned int id; /// unique positive integer
-        const char* description; /// string literal with description
-        unsigned int year; /// the year of the event
-        unsigned int impact; /// the historical impact of the event
+        public: 
+            Event() : id(0), description(""), year(0), impact(0) {};
+            Event(int id, const char* description, int year, int impact) : id(id), description(description), year(year), impact(impact) {}
+
+            unsigned int getId() const { return id; }
+            const char* getDescription() const { return description; }
+            unsigned int getYear() const { return year; }
+            unsigned int getImpact() const { return impact; }
+
+        private:       
+            unsigned int id; /// unique positive integer
+            const char* description; /// string literal with description
+            unsigned int year; /// the year of the event
+            unsigned int impact; /// the historical impact of the event
     };
     ostream& operator<<(ostream& os, const Event& e);
 

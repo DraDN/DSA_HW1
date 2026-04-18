@@ -1,5 +1,12 @@
 #include "TaskFlowManager.hpp"
 
+
+std::ostream &tfm::operator<<(std::ostream &os, const Task &t) {
+    os << "[ " << t.getId() << " | " << t.getDescription() << " | " << t.getPriority() << " ]";
+    return os;
+}
+
+
 tfm::ErrorType tfm::TaskFlowManager::addTask(unsigned int id, const char* description, short priority) {
     if (!taskQueue.isEmpty() && searchTaskByID(id) != std::nullopt) {
         return tfm::ErrorType::FAILURE_DUPLICATE_ID;
@@ -14,9 +21,52 @@ tfm::ErrorType tfm::TaskFlowManager::addTask(unsigned int id, const char* descri
     return tfm::ErrorType::SUCCESS;
 }
 
+Queue<tfm::Task> tfm::TaskFlowManager::processNextTasks(unsigned int n) {
+    Queue<tfm::Task> output;
+
+    for (unsigned int i = 0; i < n; i++) {
+        if (taskQueue.isEmpty()) break;
+
+        Task current = taskQueue.dequeue();
+        output.enqueue(current);
+        historyQueue.enqueue(current);
+
+        statistics.waitingTasks--;
+        statistics.processedTasks++;
+    }
+
+    return output;
+}
+
+std::optional<tfm::Task> tfm::TaskFlowManager::undoLastProcessedTask() {
+    if (historyQueue.isEmpty()) return std::nullopt;
+
+    Task current = historyQueue.dequeue();
+    taskQueue.enqueue(current);
+
+    statistics.successfulUndos++;
+    return std::make_optional<Task>(current);
+}
+
+template <typename T>
+static void display_queue(Queue<T> queue) {
+    while (!queue.isEmpty()) {
+        std::cout << queue.dequeue() << std::endl; // alright since `queue` parameter copies the original object
+    }
+}
+
+void tfm::TaskFlowManager::displayWaitingTasks() {
+    display_queue(taskQueue);
+}
+
+void tfm::TaskFlowManager::displayProcessHistory() {
+    display_queue(historyQueue);
+}
+
 std::optional<tfm::Task> tfm::TaskFlowManager::searchTaskByID(unsigned int id) {
     std::optional<tfm::Task> result(std::nullopt);
-    Queue<Task> bucket;
+    Queue<Task> unprocessed_bucket;
+    Queue<Task> processed_bucket;
 
     while (!taskQueue.isEmpty()) {
         auto current = taskQueue.peek();
@@ -25,11 +75,25 @@ std::optional<tfm::Task> tfm::TaskFlowManager::searchTaskByID(unsigned int id) {
             result = std::make_optional<tfm::Task>(current);
         }
 
-        bucket.enqueue(taskQueue.dequeue());
+        unprocessed_bucket.enqueue(taskQueue.dequeue());
     }
 
-    while (!bucket.isEmpty()) {
-        taskQueue.enqueue(bucket.dequeue());
+    while (!result.has_value() && !unprocessed_bucket.isEmpty()) {
+        auto current = unprocessed_bucket.peek();
+
+        if (current.getId() == id) {
+            result = std::make_optional<tfm::Task>(current);
+        }
+
+        processed_bucket.enqueue(historyQueue.dequeue());
+    }
+
+    while (!unprocessed_bucket.isEmpty()) {
+        taskQueue.enqueue(unprocessed_bucket.dequeue());
+    }
+
+    while (!processed_bucket.isEmpty()) {
+        historyQueue.enqueue(processed_bucket.dequeue());
     }
 
     return result;
