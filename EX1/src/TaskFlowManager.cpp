@@ -1,7 +1,7 @@
 #include "TaskFlowManager.hpp"
 
 tfm::ErrorType tfm::TaskFlowManager::addTask(unsigned int id, const char* description, short priority) {
-    if (!taskQueue.isEmpty() && searchTaskByID(id) == std::nullopt) {
+    if (!taskQueue.isEmpty() && searchTaskByID(id) != std::nullopt) {
         return tfm::ErrorType::FAILURE_DUPLICATE_ID;
     }
 
