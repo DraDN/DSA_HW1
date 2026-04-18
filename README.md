@@ -30,17 +30,17 @@ This exercise implements a task manager with a fully interactive menu. The manag
 ### Features
 
  - Adds tasks with different priority levels (1-5)
- - Processing of the next task, by removing the current one, and displaying the next one
- - Undo of the last processed task, by bringing back the previous task
+ - Processing of the next task, by displaying the current one, and taking the next one
+ - Undo of the last processed task
  - Display of all the waiting tasks, in order
  - Display of the processed taks history, from the most recent one
- - Process of the next k (multiple) tasks, removes the k tasks, and if there are less tasks than k, all of them will be processed and displayed
- - Searching a task by Id, for information on its state (waiting/processed) and if it exists
- - Display of statistics, shows the total of waiting/processed/successful undo operations
+ - Process of the next k (multiple) tasks, removes the k tasks, and if there are less than k tasks, all of them will be processed and displayed
+ - Searching a task by Id, and displaying its state (waiting/processed) or if it exists
+ - Display statistics, shows the total of waiting tasks/processed tasks/successful undo operations
 
 ### Implementation Details
 
-- Tasks are structured with an unique Id, a specific description, and a priority level, ina range ***from 1*** (low priority) ***to 5**(high priority)
+- Tasks are structured with an unique Id, a specific description, and a priority level, ina range ***from 1*** (low priority) ***to 5***(high priority)
 - Menu uses a user-friendly interface, by choosing a integer (1-8) for the preferred action
 
 ### Example
@@ -50,11 +50,11 @@ This exercise implements a task manager with a fully interactive menu. The manag
 
 ### Summary
 
-This exercise implements an event time line reconstruction system, created to manage the chronology of historical events. The system allows for recording, positioning and reorganization of events within the timeline, giving full ocntrol over the chronological order.
+This exercise implements an event time line reconstruction system, created to manage the chronology of historical events. The system allows for recording, positioning and reorganization of events within the timeline, giving full control over the chronological order.
 
 ### Data Structure Used
 
-***Linked List*** - Chosen because atimeline focuses on order and position, events being constantly inserted between existing ones, reloated, or removed, operations that can be handled by a linked list, leaving the rest of the timeline undisturbed.
+***Linked List*** - Chosen because a timeline focuses on relative structure, events being constantly inserted between existing ones, reloated, or removed, operations that can be handled by a linked list, leaving the rest of the timeline undisturbed.
 
 ### Features
 
@@ -62,10 +62,10 @@ This exercise implements an event time line reconstruction system, created to ma
 - Record of a recent event, by adding at the end of the timeline
 - Insertion of an event between two existing ones
 - Removal of an event based on its Id
-- Modification of an event, by moving it before or after another one
-- Display of all of the events recorded in chronological order
-- Display of the impact values of all the events
-- Reorganization of events based on impact level, bringing high-impact events at the beginning while keeping a relative order of them
+- Relocation of an event, by moving it before or after another one
+- Display of all of the events recorded in order
+- Display of the total impact values of all the events
+- Reorganization of events based on impact level, bringing events with an impact higher than a threshold at the beginning, while keeping their relative order
 
 ### Implementation Details
 
