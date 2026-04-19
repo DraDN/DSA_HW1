@@ -42,7 +42,17 @@ std::optional<tfm::Task> tfm::TaskFlowManager::undoLastProcessedTask() {
     if (historyQueue.isEmpty()) return std::nullopt;
 
     Task current = historyQueue.dequeue();
+
+    Queue<Task> bucket;
+    while (!taskQueue.isEmpty()) {
+        bucket.enqueue(taskQueue.dequeue());
+    }
+
     taskQueue.enqueue(current);
+
+    while (!bucket.isEmpty()) {
+        taskQueue.enqueue(bucket.dequeue());
+    }
 
     statistics.successfulUndos++;
     return std::make_optional<Task>(current);
@@ -78,8 +88,8 @@ std::optional<tfm::Task> tfm::TaskFlowManager::searchTaskByID(unsigned int id) {
         unprocessed_bucket.enqueue(taskQueue.dequeue());
     }
 
-    while (!result.has_value() && !unprocessed_bucket.isEmpty()) {
-        auto current = unprocessed_bucket.peek();
+    while (!result.has_value() && !historyQueue.isEmpty()) {
+        auto current = historyQueue.peek();
 
         if (current.getId() == id) {
             result = std::make_optional<tfm::Task>(current);
