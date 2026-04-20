@@ -45,28 +45,38 @@ int main() {
                 break;
             }
             case 2: {
-                
+                menu::process_next_task();
+                break;
             }
             case 3: {
-                
+                menu::undo_last_processed_task();
+                break;
             }
             case 4: {
-                
+                menu::display_waiting_tasks();
+                break;
             }
             case 5: {
+                menu::display_processed_task_history();
+                break;
                 
             }
             case 6: {
-                
+                menu::process_next_k_tasks();
+                break;
             }
             case 7: {
+                menu::search_task_by_id();
+                break;
 
             }
             case 8: {
+                menu::display_statistics();
+                break;
                 
             }
             case 0: {
-                std::cout << "Exiting Task Flow Manager.\n";
+                menu::exit_menu();
                 break;
                 
             }

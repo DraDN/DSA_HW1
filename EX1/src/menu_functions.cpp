@@ -25,7 +25,7 @@ void menu::display_menu() {
 
 void menu::add_task() {
     unsigned int id;
-    std::string description;
+    static std::string description;
     short priority;
 
     std::cin >> id;
@@ -51,3 +51,107 @@ void menu::add_task() {
         std::cout << "Task could not be added. \n";
     }
 }
+
+void menu::process_next_task() {
+    Queue<tfm::Task> processResult = task_manager.processNextTasks(1);
+
+    if (processResult.isEmpty()) {
+        std::cout << "No more waiting tasks.\n";
+    }
+    else {
+        tfm::Task t = processResult.dequeue();
+        std::cout << "Processed task: \n";
+        std::cout << "ID: " << t.getId() << ", Description: " << t.getDescription() << ", Priority: " << t.getPriority() << std::endl;
+    }
+
+}
+
+void menu::undo_last_processed_task() {
+    auto result = task_manager.undoLastProcessedTask();
+
+    if (result.has_value()) {
+        std::cout << "Undo succcessful. Restored task: \n";
+        std::cout << "ID: " << result->getId() << ", Description: " << result->getDescription() << ", Priority: " << result->getPriority() << "\n";
+    }
+    else {
+        std::cout << "No processed task available for undo.\n";
+    }
+}
+
+void menu::display_waiting_tasks() {
+    if (task_manager.getStatistics().waitingTasks == 0){
+        std::cout << "No waiting taks. \n";
+        return;
+    }
+    std::cout << "Waiting tasks:\n";
+    task_manager.displayWaitingTasks();
+}
+
+void menu::display_processed_task_history() {
+    if (task_manager.getStatistics().processedTasks == 0) {
+        std::cout << "No processed tasks. \n";
+        return;
+    }
+    std::cout << "Processed task history:\n";
+    task_manager.displayProcessHistory();
+}
+
+void menu::process_next_k_tasks() {
+    unsigned int k;
+    std::cin >> k;
+
+    if (!std::cin || k == 0) {
+        std::cout << "Invalid input.\n";
+        std::cin.clear();
+        std::cin.ignore(256, '\n');
+        return;
+        
+    }
+    std::cout << "Requested to process " << k << " task(s). \n";
+
+    Queue<tfm::Task> processedTasks = task_manager.processNextTasks(k);
+
+    if (processedTasks.isEmpty()) {
+        std::cout << "No waiting tasks to process. \n";
+        return;
+    }
+
+    while (!processedTasks.isEmpty()) {
+        tfm::Task t = processedTasks.dequeue();
+        std::cout << "\n Processed tasks: \n";
+        std::cout << "ID: " << t.getId() << ", Description: " << t.getDescription() << ", Priority: " << t.getPriority() << "\n";
+    }
+}
+
+void menu::search_task_by_id() {
+    unsigned int id;
+    std::cout <<"Enter Id to search: ";
+    std::cin >> id;
+
+    auto result = task_manager.searchTaskByID(id);
+
+    if (result.has_value()) {
+        std::cout << "Task found: \n";
+        std::cout << "ID: " << result->getId() << ", Description: " << result->getDescription() << ", Priority: " << result->getPriority() << "\n";
+
+    }
+    else {
+        std::cout << "Task with Id " << id << " not found in waiting queue or history. \n";
+    }
+}
+
+void menu::display_statistics() {
+    tfm::TaskFlowManagerStatistics stats = task_manager.getStatistics();
+
+    std::cout << "Statistics: \n";
+    std::cout << "Waiting tasks: " << stats.waitingTasks << "\n";
+    std::cout << "Processed tasks: " << stats.processedTasks << "\n";
+    std::cout << "Successful undooperations: " << stats.successfulUndos << "\n";
+
+}
+
+
+void menu::exit_menu() {
+    std::cout << "Program terminated.";
+}
+
