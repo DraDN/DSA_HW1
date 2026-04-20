@@ -1,5 +1,5 @@
-Work in progress!
-We'll check back to yall in a hot minute :kissing_heart:
+<!---Work in progress!
+We'll check back to yall in a hot minute :kissing_heart: --->
 
 # Data Strucutres and Algorithms - HW1
 
@@ -69,23 +69,36 @@ This exercise implements an event time line reconstruction system, created to ma
 
 ### Implementation Details
 
+- Evets are structured with an unique ID, a name, the year of the event, impact score given by an integer indicating the significance and prev/next pointers
+- Each node in the timeline maintains two directional links, one to its predecessor and one to its successor, enabling efficient traversal and pointer rewiring during modifications
+
 ### Example
 
 
 
 ## How to Compile and Run
 
+- A C++ compiler is necessary
+
+### Instructions
+
+Navigate to the build folder and run the program:
+`cd build\EX`
+`EX.exe`
+
+Or run it directly using the full path:
+`DSA_HW1\build\EX\EX.exe`
+
+Repeat for both exercises directories and input the presented operations.
+
 ## Notes
 
+- Each exrcise uses one specific data structure and a custom data structure implementation
+- All cases were tested for both exercises for complete functionality
+- The code uses clases and separate header files for an organized structure
+- The exercises demonstrate the understanding and  use of data structures
 
 
-
-<!--features of project
-instructions on how to use them
-
-if there are requirements that are not fuctional, suggest possible solutions
-
--->
 
 
 
