@@ -43,17 +43,10 @@ tools::Optional<tfm::Task> tfm::TaskFlowManager::undoLastProcessedTask() {
 
     if (current == tools::nullopt) return tools::nullopt;
 
-    tools::Queue<Task> bucket;
-    while (!taskQueue.isEmpty()) {
-        bucket.enqueue(taskQueue.dequeue().value);
-    }
-
     taskQueue.enqueue(current.value);
 
-    while (!bucket.isEmpty()) {
-        taskQueue.enqueue(bucket.dequeue().value);
-    }
-
+    statistics.waitingTasks++;
+    statistics.processedTasks--;
     statistics.successfulUndos++;
     return current;
 }

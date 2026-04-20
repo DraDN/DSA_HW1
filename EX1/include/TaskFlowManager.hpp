@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <cstring>
 
 #include "Queue.hpp"
 #include "Optional.hpp"
@@ -22,8 +23,11 @@ namespace tfm {
     /// @brief A task in the TaskFlowManager
     struct Task {
         public:
-            Task() : id(0), description(""), priority(1) {};
-            Task(unsigned int id, const char* description, short priority) : id(id), description(description), priority(priority) {};
+            Task() : id(0), description(nullptr), priority(1) {};
+            Task(unsigned int id, const char* description, short priority) : id(id),  priority(priority) {
+                this->description = new char[strlen(description) + 1];
+                strcpy(this->description, description);
+            };
 
             unsigned int getId() const { return id; }
             const char* getDescription() const { return description; }
@@ -31,7 +35,7 @@ namespace tfm {
 
         private:
             unsigned int id; /// unique positive integer identifier
-            const char* description; /// string literal with a short description
+            char* description; /// string with a short description
             short priority; /// integer between 1 and 5
     };
     std::ostream& operator<<(std::ostream& os, const Task& t);

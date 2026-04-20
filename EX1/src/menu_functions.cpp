@@ -29,9 +29,6 @@ void menu::add_task() {
     short priority;
 
     std::cin >> id;
-    // std::cin.ignore();
-    // std::getline(std::cin, description);
-    // std::cin.ignore();
     std::cin >> description;
     std::cin >> priority;
 
@@ -53,13 +50,13 @@ void menu::add_task() {
 }
 
 void menu::process_next_task() {
-    Queue<tfm::Task> processResult = task_manager.processNextTasks(1);
+    tools::Queue<tfm::Task> processResult = task_manager.processNextTasks(1);
 
     if (processResult.isEmpty()) {
         std::cout << "No more waiting tasks.\n";
     }
     else {
-        tfm::Task t = processResult.dequeue();
+        tfm::Task t = processResult.dequeue().value;
         std::cout << "Processed task: \n";
         std::cout << "ID: " << t.getId() << ", Description: " << t.getDescription() << ", Priority: " << t.getPriority() << std::endl;
     }
@@ -69,7 +66,7 @@ void menu::process_next_task() {
 void menu::undo_last_processed_task() {
     auto result = task_manager.undoLastProcessedTask();
 
-    if (result.has_value()) {
+    if (result.has_value) {
         std::cout << "Undo succcessful. Restored task: \n";
         std::cout << "ID: " << result->getId() << ", Description: " << result->getDescription() << ", Priority: " << result->getPriority() << "\n";
     }
@@ -109,7 +106,7 @@ void menu::process_next_k_tasks() {
     }
     std::cout << "Requested to process " << k << " task(s). \n";
 
-    Queue<tfm::Task> processedTasks = task_manager.processNextTasks(k);
+    tools::Queue<tfm::Task> processedTasks = task_manager.processNextTasks(k);
 
     if (processedTasks.isEmpty()) {
         std::cout << "No waiting tasks to process. \n";
@@ -117,7 +114,7 @@ void menu::process_next_k_tasks() {
     }
 
     while (!processedTasks.isEmpty()) {
-        tfm::Task t = processedTasks.dequeue();
+        tfm::Task t = processedTasks.dequeue().value;
         std::cout << "\n Processed tasks: \n";
         std::cout << "ID: " << t.getId() << ", Description: " << t.getDescription() << ", Priority: " << t.getPriority() << "\n";
     }
@@ -130,7 +127,7 @@ void menu::search_task_by_id() {
 
     auto result = task_manager.searchTaskByID(id);
 
-    if (result.has_value()) {
+    if (result.has_value) {
         std::cout << "Task found: \n";
         std::cout << "ID: " << result->getId() << ", Description: " << result->getDescription() << ", Priority: " << result->getPriority() << "\n";
 
