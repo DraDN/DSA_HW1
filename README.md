@@ -1,5 +1,5 @@
-Work in progress!
-We'll check back to yall in a hot minute :kissing_heart:
+<!---Work in progress!
+We'll check back to yall in a hot minute :kissing_heart: --->
 
 # Data Strucutres and Algorithms - HW1
 
@@ -45,6 +45,44 @@ This exercise implements a task manager with a fully interactive menu. The manag
 
 ### Example
 
+INPUT
+```
+Choose option: 1
+101     // Id
+Slides  // Descripion
+5       // Priority
+```
+OUPUT
+```
+Task added successfully:
+ID: 101, Description:  Slides, Priority: 5
+```
+
+INPUT
+```
+Choose option: 2
+```
+OUTPUT
+```
+Processed task:
+ID: 101, Description: Fix_memory_leak, Priority: 5
+```
+
+INPUT
+```
+Choose option: 6
+3  // k
+```
+OUTPUT
+```
+Requested to process 3 task(s).
+Processed tasks:
+ID: 104, Description: Banners, Priority: 4
+Processed tasks:
+ID: 103, Description: Badges, Priority: 2
+Processed tasks:
+ID: 102, Description: Sponsors, Priority: 5
+```
 
 ## Exercise 2 - Timeline Reconstruction System
 
@@ -69,23 +107,87 @@ This exercise implements an event time line reconstruction system, created to ma
 
 ### Implementation Details
 
+- Evets are structured with an unique ID, a name, the year of the event, impact score given by an integer indicating the significance and prev/next pointers
+- Each node in the timeline maintains two directional links, one to its predecessor and one to its successor, enabling efficient traversal and pointer rewiring during modifications
+
 ### Example
 
+INPUT
+```
+recordAncientEvent  // Method
+0                   // Unique integer
+First_contact       // Description
+2200                // Year
+100                 // Impact
+```
+OUTPUT
+```
+[ 0 | First_contact | 2200 | 100 ]  // Front
+```
 
+INPUT
+```
+recordRecentEvent
+1
+Quantum_energy
+2300
+90
+```
+OUTPUT
+```
+[ 1 | Quantum_energy | 2300 | 90 ]  // Back
+```
+
+INPUT
+```
+relocateEvent
+3
+0
+false
+```
+OUTPUT
+```
+[ 0 | First_contact | 2200 | 100 ]
+[ 3 | Temporal_crisis | 2400 | 95 ]  // After node 0
+[ 1 | Quantum_energy | 2300 | 90 ]
+```
+INPUT
+```
+relocateEvent
+3
+0
+true
+```
+OUTPUT
+```
+[ 3 | Temporal_crisis | 2400 | 95 ]  // Before node 0
+[ 0 | First_contact | 2200 | 100 ]
+[ 1 | Quantum_energy | 2300 | 90 ]
+```
 
 ## How to Compile and Run
 
+- A C++ compiler is necessary
+
+### Instructions
+
+Navigate to the build folder and run the program:
+`cd build\EX`
+`EX.exe`
+
+Or run it directly using the full path:
+`DSA_HW1\build\EX\EX.exe`
+
+Repeat for both exercises directories and input the presented operations.
+
 ## Notes
 
+- Each exrcise uses one specific data structure and a custom data structure implementation
+- All cases were tested for both exercises for complete functionality
+- The code uses clases and separate header files for an organized structure
+- The exercises demonstrate the understanding and  use of data structures
 
 
-
-<!--features of project
-instructions on how to use them
-
-if there are requirements that are not fuctional, suggest possible solutions
-
--->
 
 
 

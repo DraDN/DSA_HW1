@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <optional>
+#include <ostream>
 
-#include "LinkedList.h"
+#include "LinkedList.hpp"
+#include "Optional.hpp"
 
 
 namespace tlm {
@@ -35,7 +35,7 @@ namespace tlm {
             unsigned int year; /// the year of the event
             unsigned int impact; /// the historical impact of the event
     };
-    ostream& operator<<(ostream& os, const Event& e);
+    std::ostream& operator<<(std::ostream& os, const Event& e);
 
     /// @class TimeLineManager
     /// @brief Manages a timeline of events
@@ -125,13 +125,13 @@ namespace tlm {
         private:
             /// @brief Searches for an event by its ID
             /// @param id the ID of the event to search for
-            /// @return If the event is found - `std::optional<Node<tlm::Event>*>` - optional with the value of the pointer to the node containing the event,
+            /// @return If the event is found - `tools::Optional<tools::LinkedList<Event>::Node*>` - optional with the value of the pointer to the node containing the event,
             /// 
-            /// Otwerwise - `std::nullopt` - if the event is not found
-            std::optional<Node<Event>*> search_event_by_id(unsigned int id);
+            /// Otwerwise - `tools::nullopt` - if the event is not found
+            tools::Optional<tools::LinkedList<Event>::Node*> search_event_by_id(unsigned int id);
 
         private:
-            LinkedList<Event> list;
+            tools::LinkedList<Event> list;
 
     };
 }

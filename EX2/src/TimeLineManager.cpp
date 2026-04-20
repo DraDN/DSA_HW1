@@ -1,29 +1,32 @@
 #include "TimeLineManager.hpp"
 
+#include <iostream>
 
-ostream& tlm::operator<<(ostream& os, const Event& e) {
+
+std::ostream& tlm::operator<<(std::ostream& os, const Event& e) {
     os << "[ " << e.getId() << " | " << e.getDescription() << " | " << e.getYear() << " | " << e.getImpact() << " ]";
     return os;
 }
 
 
-std::optional<Node<tlm::Event>*> tlm::TimeLineManager::search_event_by_id(unsigned int id) {
-    Node<Event>* current = list.pfirst;
+tools::Optional<tools::LinkedList<tlm::Event>::Node*> tlm::TimeLineManager::search_event_by_id(unsigned int id) {
+    tools::LinkedList<tlm::Event>::Node* current = list.pfirst;
 
     while (current != nullptr) {
-        if (current->info.getId() == id) {
-            return std::make_optional<Node<Event>*>(current);
+        if (current->value.getId() == id) {
+            return tools::Optional<tools::LinkedList<tlm::Event>::Node*>(current);
         }
         current = current->next;
     }
-    return std::nullopt;
+
+    return tools::nullopt;
 }
 
 
 /// @brief Macro for checking if ID is already in use in `list`
 /// 
 /// Makes function return `tlm::ErrorType::FAILURE_DUPLICATE_ID` if ID is already in use
-#define CHECK_DUPPLICATE_ID(id) if (!list.isEmpty() && search_event_by_id(id) != std::nullopt) return tlm::ErrorType::FAILURE_DUPLICATE_ID
+#define CHECK_DUPPLICATE_ID(id) if (!list.isEmpty() && search_event_by_id(id) != tools::nullopt) return tlm::ErrorType::FAILURE_DUPLICATE_ID
 
 tlm::ErrorType tlm::TimeLineManager::recordAncientEvent(unsigned int id, const char* description, unsigned int year, unsigned int impact) {
     CHECK_DUPPLICATE_ID(id);
@@ -58,37 +61,38 @@ tlm::ErrorType tlm::TimeLineManager::insertEventBetween(unsigned int leftId, uns
 
     CHECK_DUPPLICATE_ID(e.getId());
 
-    std::optional<Node<Event>*> current = search_event_by_id(leftId);
-    if (!current.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID; 
-    if (current.value()->next == nullptr && current.value()->prev == nullptr) return tlm::ErrorType::FAILURE; // if list has only one element
+    tools::Optional<tools::LinkedList<tlm::Event>::Node*> current = search_event_by_id(leftId);
+    if (!current) return tlm::ErrorType::FAILURE_INVALID_ID; 
+    if (current.value->next == nullptr && current.value->prev == nullptr) return tlm::ErrorType::FAILURE; // if list has only one element
     
-    Node<Event>* neighbour = nullptr;
+    tools::LinkedList<tlm::Event>::Node* neighbour = nullptr;
 
-    bool is_neighbour_right = (current.value()->next != nullptr && current.value()->next->info.getId() == rightId);
-    bool is_neightbour_left = (current.value()->prev != nullptr && current.value()->prev->info.getId() == rightId);
+    bool is_neighbour_right = (current.value->next != nullptr && current.value->next->value.getId() == rightId);
+    bool is_neightbour_left = (current.value->prev != nullptr && current.value->prev->value.getId() == rightId);
 
-    Node<Event>* newEvent = new Node<Event>;
-    newEvent->info = e;
+    tools::LinkedList<tlm::Event>::Node* newEvent = new tools::LinkedList<tlm::Event>::Node;
+    newEvent->value = e;
 
     if (is_neighbour_right) {
-        neighbour = current.value()->next;
+        neighbour = current.value->next;
 
         // make connections for inserted event
         newEvent->next = neighbour;
-        newEvent->prev = current.value();
+        newEvent->prev = current.value;
 
         // replace connections of neighbours
-        current.value()->next = newEvent;
+        current.value->next = newEvent;
         neighbour->prev = newEvent;
+
     } else if (is_neightbour_left) {
-        neighbour = current.value()->prev;
+        neighbour = current.value->prev;
 
         // make connections for inserted event
-        newEvent->next = current.value();
+        newEvent->next = current.value;
         newEvent->prev = neighbour;
 
         // replace connections of neighbours
-        current.value()->prev = newEvent;
+        current.value->prev = newEvent;
         neighbour->next = newEvent;
     } 
     else return tlm::ErrorType::FAILURE_IDS_NOT_ADJACENT;
@@ -99,64 +103,67 @@ tlm::ErrorType tlm::TimeLineManager::insertEventBetween(unsigned int leftId, uns
 tlm::ErrorType tlm::TimeLineManager::relocateEvent(unsigned int idToMove, unsigned int newNeighborID, bool before) {
     if (idToMove == newNeighborID) return tlm::ErrorType::FAILURE_IDENTICAL_IDS;
 
-    std::optional<Node<Event>*> to_move = search_event_by_id(idToMove);
-    if (!to_move.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID;
+    tools::Optional<tools::LinkedList<tlm::Event>::Node*> to_move = search_event_by_id(idToMove);
+    if (!to_move) return tlm::ErrorType::FAILURE_INVALID_ID;
 
-    std::optional<Node<Event>*> neighbour = search_event_by_id(newNeighborID);
-    if (!neighbour.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID;
+    tools::Optional<tools::LinkedList<tlm::Event>::Node*> neighbour = search_event_by_id(newNeighborID);
+    if (!neighbour) return tlm::ErrorType::FAILURE_INVALID_ID;
+
+    auto moved_node = to_move.value;
+    auto neighbour_node = neighbour.value;
 
     if (before) {
         // patch old connections
-        to_move.value()->prev->next = to_move.value()->next;
-        to_move.value()->next->prev = to_move.value()->prev;
+        moved_node->prev->next = moved_node->next;
+        moved_node->next->prev = moved_node->prev;
 
         // make new connections for moved
-        to_move.value()->next = neighbour.value();
-        to_move.value()->prev = neighbour.value()->prev;
+        moved_node->next = neighbour_node;
+        moved_node->prev = neighbour_node->prev;
 
         // make new connections for neighbour
-        neighbour.value()->prev->next = to_move.value();
-        neighbour.value()->prev = to_move.value();
+        neighbour_node->prev->next = moved_node;
+        neighbour_node->prev = moved_node;
     } else {
         // patch old connections
-        to_move.value()->prev->next = to_move.value()->next;
-        to_move.value()->next->prev = to_move.value()->prev;
+        moved_node->prev->next = moved_node->next;
+        moved_node->next->prev = moved_node->prev;
 
         // make new connections
-        to_move.value()->next = neighbour.value()->next;
-        to_move.value()->prev = neighbour.value();
+        moved_node->next = neighbour_node->next;
+        moved_node->prev = neighbour_node;
 
         // make new connections for neighbour
-        neighbour.value()->next->prev = to_move.value();
-        neighbour.value()->next = to_move.value();
+        neighbour_node->next->prev = moved_node;
+        neighbour_node->next = moved_node;
     }
 
     return tlm::ErrorType::SUCCESS;
 }
 
 tlm::ErrorType tlm::TimeLineManager::eraseCorruptedEvent(unsigned int id) {
-    std::optional<Node<Event>*> to_delete = search_event_by_id(id);
+    tools::Optional<tools::LinkedList<tlm::Event>::Node*> to_delete = search_event_by_id(id);
 
-    if (!to_delete.has_value()) return tlm::ErrorType::FAILURE_INVALID_ID;
+    if (!to_delete) return tlm::ErrorType::FAILURE_INVALID_ID;
 
-    if (to_delete.value()->prev == nullptr) list.pfirst = to_delete.value()->next; // check if at start of list
-    else to_delete.value()->prev->next = to_delete.value()->next;
+    if (to_delete.value->prev == nullptr) list.pfirst = to_delete.value->next; // check if at start of list
+    else to_delete.value->prev->next = to_delete.value->next;
 
-    if (to_delete.value()->next == nullptr) list.plast = to_delete.value()->prev; // check if at end of list
-    else to_delete.value()->next->prev = to_delete.value()->prev;
+    if (to_delete.value->next == nullptr) list.plast = to_delete.value->prev; // check if at end of list
+    else to_delete.value->next->prev = to_delete.value->prev;
 
-    delete to_delete.value();
+    delete to_delete.value;
     return tlm::ErrorType::SUCCESS;
 }
 
 void tlm::TimeLineManager::displayChronology() {
     if(list.isEmpty()) {
-        cout << "Timeline is empty. \n";
+        std::cout << "Timeline is empty. \n";
     }
 
-    Node<Event>* current = list.pfirst;
+    tools::LinkedList<tlm::Event>::Node* current = list.pfirst;
     while (current != nullptr) {
-        std::cout << current->info << std::endl;
+        std::cout << current->value << std::endl;
         current = current->next;
     }
 }
@@ -164,9 +171,9 @@ void tlm::TimeLineManager::displayChronology() {
 unsigned int tlm::TimeLineManager::computeTotalImpact() {
     unsigned int total = 0;
 
-    Node<Event>* current = list.pfirst;
+    tools::LinkedList<tlm::Event>::Node* current = list.pfirst;
     while (current != nullptr) {
-        total += current->info.getImpact();
+        total += current->value.getImpact();
         current = current->next;
     }
 
@@ -180,12 +187,12 @@ unsigned int tlm::TimeLineManager::computeTotalImpact() {
     Then updates the auxiliary location
 */
 void tlm::TimeLineManager::stabilizeTimeline(int threshold) {
-    Node<Event>* current = list.pfirst;
-    Node<Event>* end_of_sort_location = list.pfirst;
+    tools::LinkedList<tlm::Event>::Node* current = list.pfirst;
+    tools::LinkedList<tlm::Event>::Node* end_of_sort_location = list.pfirst;
 
     while (current != nullptr) {
-        if (current->info.getImpact() >= threshold) {
-            relocateEvent(current->info.getId(), end_of_sort_location->info.getId(), true);
+        if (current->value.getImpact() >= threshold) {
+            relocateEvent(current->value.getId(), end_of_sort_location->value.getId(), true);
             end_of_sort_location = current->next;
         }
 

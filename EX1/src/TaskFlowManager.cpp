@@ -8,7 +8,7 @@ std::ostream &tfm::operator<<(std::ostream &os, const Task &t) {
 
 
 tfm::ErrorType tfm::TaskFlowManager::addTask(unsigned int id, const char* description, short priority) {
-    if (!taskQueue.isEmpty() && searchTaskByID(id) != std::nullopt) {
+    if (!taskQueue.isEmpty() && searchTaskByID(id) != tools::nullopt) {
         return tfm::ErrorType::FAILURE_DUPLICATE_ID;
     }
 
@@ -21,13 +21,13 @@ tfm::ErrorType tfm::TaskFlowManager::addTask(unsigned int id, const char* descri
     return tfm::ErrorType::SUCCESS;
 }
 
-Queue<tfm::Task> tfm::TaskFlowManager::processNextTasks(unsigned int n) {
-    Queue<tfm::Task> output;
+tools::Queue<tfm::Task> tfm::TaskFlowManager::processNextTasks(unsigned int n) {
+    tools::Queue<tfm::Task> output;
 
     for (unsigned int i = 0; i < n; i++) {
         if (taskQueue.isEmpty()) break;
 
-        Task current = taskQueue.dequeue();
+        Task current = taskQueue.dequeue().value;
         output.enqueue(current);
         historyQueue.enqueue(current);
 
@@ -38,30 +38,30 @@ Queue<tfm::Task> tfm::TaskFlowManager::processNextTasks(unsigned int n) {
     return output;
 }
 
-std::optional<tfm::Task> tfm::TaskFlowManager::undoLastProcessedTask() {
-    if (historyQueue.isEmpty()) return std::nullopt;
+tools::Optional<tfm::Task> tfm::TaskFlowManager::undoLastProcessedTask() {
+    tools::Optional<Task> current = historyQueue.dequeue();
 
-    Task current = historyQueue.dequeue();
+    if (current == tools::nullopt) return tools::nullopt;
 
-    Queue<Task> bucket;
+    tools::Queue<Task> bucket;
     while (!taskQueue.isEmpty()) {
-        bucket.enqueue(taskQueue.dequeue());
+        bucket.enqueue(taskQueue.dequeue().value);
     }
 
-    taskQueue.enqueue(current);
+    taskQueue.enqueue(current.value);
 
     while (!bucket.isEmpty()) {
-        taskQueue.enqueue(bucket.dequeue());
+        taskQueue.enqueue(bucket.dequeue().value);
     }
 
     statistics.successfulUndos++;
-    return std::make_optional<Task>(current);
+    return current;
 }
 
 template <typename T>
-static void display_queue(Queue<T> queue) {
+static void display_queue(tools::Queue<T> queue) {
     while (!queue.isEmpty()) {
-        std::cout << queue.dequeue() << std::endl; // alright since `queue` parameter copies the original object
+        std::cout << queue.dequeue().value << std::endl; // alright since `queue` parameter copies the original object
     }
 }
 
@@ -73,37 +73,37 @@ void tfm::TaskFlowManager::displayProcessHistory() {
     display_queue(historyQueue);
 }
 
-std::optional<tfm::Task> tfm::TaskFlowManager::searchTaskByID(unsigned int id) {
-    std::optional<tfm::Task> result(std::nullopt);
-    Queue<Task> unprocessed_bucket;
-    Queue<Task> processed_bucket;
+tools::Optional<tfm::Task> tfm::TaskFlowManager::searchTaskByID(unsigned int id) {
+    tools::Optional<tfm::Task> result;
+    tools::Queue<Task> unprocessed_bucket;
+    tools::Queue<Task> processed_bucket;
 
     while (!taskQueue.isEmpty()) {
         auto current = taskQueue.peek();
 
-        if (current.getId() == id) {
-            result = std::make_optional<tfm::Task>(current);
+        if (current.value.getId() == id) {
+            result = current;
         }
 
-        unprocessed_bucket.enqueue(taskQueue.dequeue());
+        unprocessed_bucket.enqueue(taskQueue.dequeue().value);
     }
 
-    while (!result.has_value() && !historyQueue.isEmpty()) {
+    while (!result.has_value && !historyQueue.isEmpty()) {
         auto current = historyQueue.peek();
 
-        if (current.getId() == id) {
-            result = std::make_optional<tfm::Task>(current);
+        if (current.value.getId() == id) {
+            result = current;
         }
 
-        processed_bucket.enqueue(historyQueue.dequeue());
+        processed_bucket.enqueue(historyQueue.dequeue().value);
     }
 
     while (!unprocessed_bucket.isEmpty()) {
-        taskQueue.enqueue(unprocessed_bucket.dequeue());
+        taskQueue.enqueue(unprocessed_bucket.dequeue().value);
     }
 
     while (!processed_bucket.isEmpty()) {
-        historyQueue.enqueue(processed_bucket.dequeue());
+        historyQueue.enqueue(processed_bucket.dequeue().value);
     }
 
     return result;
