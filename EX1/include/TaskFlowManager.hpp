@@ -93,8 +93,6 @@ namespace tfm {
             TaskFlowManagerStatistics getStatistics() { return statistics; }
 
         private:
-            // Queue<Task> taskQueue;
-            // Queue<Task> historyQueue;
             tools::Queue<Task> taskQueue;
             tools::Queue<Task> historyQueue;
             TaskFlowManagerStatistics statistics;

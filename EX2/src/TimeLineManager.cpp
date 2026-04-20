@@ -103,11 +103,9 @@ tlm::ErrorType tlm::TimeLineManager::insertEventBetween(unsigned int leftId, uns
 tlm::ErrorType tlm::TimeLineManager::relocateEvent(unsigned int idToMove, unsigned int newNeighborID, bool before) {
     if (idToMove == newNeighborID) return tlm::ErrorType::FAILURE_IDENTICAL_IDS;
 
-    // std::optional<Node<Event>*> to_move = search_event_by_id(idToMove);
     tools::Optional<tools::LinkedList<tlm::Event>::Node*> to_move = search_event_by_id(idToMove);
     if (!to_move) return tlm::ErrorType::FAILURE_INVALID_ID;
 
-    // std::optional<Node<Event>*> neighbour = search_event_by_id(newNeighborID);
     tools::Optional<tools::LinkedList<tlm::Event>::Node*> neighbour = search_event_by_id(newNeighborID);
     if (!neighbour) return tlm::ErrorType::FAILURE_INVALID_ID;
 
@@ -144,7 +142,6 @@ tlm::ErrorType tlm::TimeLineManager::relocateEvent(unsigned int idToMove, unsign
 }
 
 tlm::ErrorType tlm::TimeLineManager::eraseCorruptedEvent(unsigned int id) {
-    // std::optional<Node<Event>*> to_delete = search_event_by_id(id);
     tools::Optional<tools::LinkedList<tlm::Event>::Node*> to_delete = search_event_by_id(id);
 
     if (!to_delete) return tlm::ErrorType::FAILURE_INVALID_ID;
@@ -190,8 +187,6 @@ unsigned int tlm::TimeLineManager::computeTotalImpact() {
     Then updates the auxiliary location
 */
 void tlm::TimeLineManager::stabilizeTimeline(int threshold) {
-    // Node<Event>* current = list.pfirst;
-    // Node<Event>* end_of_sort_location = list.pfirst;
     tools::LinkedList<tlm::Event>::Node* current = list.pfirst;
     tools::LinkedList<tlm::Event>::Node* end_of_sort_location = list.pfirst;
 
