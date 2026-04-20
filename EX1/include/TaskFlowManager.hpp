@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iostream>
-#include <optional>
 
-#include "Source_Queue.h"
+#include "Queue.hpp"
+#include "Optional.hpp"
 
 
 namespace tfm {
@@ -67,14 +67,14 @@ namespace tfm {
 
             /// @brief Processes n tasks from the waiting list
             /// @param n the number of tasks to process
-            /// @return a `Queue<Task>` containing the processed tasks, in order
-            Queue<Task> processNextTasks(unsigned int n = 1);
+            /// @return a `tools::Queue<Task>` containing the processed tasks, in order
+            tools::Queue<Task> processNextTasks(unsigned int n = 1);
 
             /// @brief Undoes the last processing of a task
-            /// @return `std::optional<Task>` containing the undone task
+            /// @return `tools::Optional<Task>` containing the undone task
             ///
-            /// `std::nullopt` if there are no tasks to undo
-            std::optional<Task> undoLastProcessedTask();
+            /// `tools::nullopt` if there are no tasks to undo
+            tools::Optional<Task> undoLastProcessedTask();
 
             void displayWaitingTasks();
             
@@ -83,18 +83,20 @@ namespace tfm {
 
             /// @brief Searches for a task (done or not) by ID
             /// @param id the ID to search for
-            /// @return `std::optional<Task>` containing the task
+            /// @return `tools::Optional<Task>` containing the task
             ///
-            /// `std::nullopt` if the task was not found
-            std::optional<Task> searchTaskByID(unsigned int id);
+            /// `tools::nullopt` if the task was not found
+            tools::Optional<Task> searchTaskByID(unsigned int id);
 
             /// @brief Returns the statistics of the TaskFlowManager
             /// @return `TaskFlowManagerStatistics` containing the values
             TaskFlowManagerStatistics getStatistics() { return statistics; }
 
         private:
-            Queue<Task> taskQueue;
-            Queue<Task> historyQueue;
+            // Queue<Task> taskQueue;
+            // Queue<Task> historyQueue;
+            tools::Queue<Task> taskQueue;
+            tools::Queue<Task> historyQueue;
             TaskFlowManagerStatistics statistics;
     };
 }

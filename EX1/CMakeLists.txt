@@ -1,5 +1,6 @@
 add_library(TFM STATIC src/TaskFlowManager.cpp)
 target_include_directories(TFM PUBLIC include)
+target_link_libraries(TFM PUBLIC TOOLS)
 
 add_executable(EX1 src/main.cpp
     src/menu_functions.cpp)
