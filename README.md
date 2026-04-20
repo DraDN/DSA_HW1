@@ -45,6 +45,44 @@ This exercise implements a task manager with a fully interactive menu. The manag
 
 ### Example
 
+INPUT
+```
+Choose option: 1
+101     // Id
+Slides  // Descripion
+5       // Priority
+```
+OUPUT
+```
+Task added successfully:
+ID: 101, Description:  Slides, Priority: 5
+```
+
+INPUT
+```
+Choose option: 2
+```
+OUTPUT
+```
+Processed task:
+ID: 101, Description: Fix_memory_leak, Priority: 5
+```
+
+INPUT
+```
+Choose option: 6
+3  // k
+```
+OUTPUT
+```
+Requested to process 3 task(s).
+Processed tasks:
+ID: 104, Description: Banners, Priority: 4
+Processed tasks:
+ID: 103, Description: Badges, Priority: 2
+Processed tasks:
+ID: 102, Description: Sponsors, Priority: 5
+```
 
 ## Exercise 2 - Timeline Reconstruction System
 
@@ -74,7 +112,58 @@ This exercise implements an event time line reconstruction system, created to ma
 
 ### Example
 
+INPUT
+```
+recordAncientEvent  // Method
+0                   // Unique integer
+First_contact       // Description
+2200                // Year
+100                 // Impact
+```
+OUTPUT
+```
+[ 0 | First_contact | 2200 | 100 ]  // Front
+```
 
+INPUT
+```
+recordRecentEvent
+1
+Quantum_energy
+2300
+90
+```
+OUTPUT
+```
+[ 1 | Quantum_energy | 2300 | 90 ]  // Back
+```
+
+INPUT
+```
+relocateEvent
+3
+0
+false
+```
+OUTPUT
+```
+[ 0 | First_contact | 2200 | 100 ]
+[ 3 | Temporal_crisis | 2400 | 95 ]  // After node 0
+[ 1 | Quantum_energy | 2300 | 90 ]
+```
+INPUT
+```
+relocateEvent
+3
+0
+true
+```
+OUTPUT
+```
+[ 3 | Temporal_crisis | 2400 | 95 ]  // Before node 0
+[ 0 | First_contact | 2200 | 100 ]
+[ 1 | Quantum_energy | 2300 | 90 ]
+```
 
 ## How to Compile and Run
 
