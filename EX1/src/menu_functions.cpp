@@ -28,12 +28,16 @@ void menu::add_task() {
     static std::string description;
     short priority;
 
+    std::cout << "Input a unique ID for the task: ";
     std::cin >> id;
+    std::cout << "Input a description for the task: ";
     std::cin >> description;
+    std::cout << "Input a priority for the task (1-5): ";
     std::cin >> priority;
 
     tfm::ErrorType addTaskResult = task_manager.addTask(id, description.c_str() , priority);
 
+    std::cout << "\n";
     if (addTaskResult == tfm::ErrorType::SUCCESS) {
         std::cout << "Task added succesfully: \n";
         std::cout << "ID: " << id << ", Description: " << description << ", Priority: " << priority << std::endl;
@@ -95,6 +99,7 @@ void menu::display_processed_task_history() {
 
 void menu::process_next_k_tasks() {
     unsigned int k;
+    std::cout << "Enter number of tasks to process: ";
     std::cin >> k;
 
     if (!std::cin || k == 0) {
@@ -104,7 +109,7 @@ void menu::process_next_k_tasks() {
         return;
         
     }
-    std::cout << "Requested to process " << k << " task(s). \n";
+    std::cout << "\nRequested to process " << k << " task(s). \n";
 
     tools::Queue<tfm::Task> processedTasks = task_manager.processNextTasks(k);
 
@@ -122,11 +127,12 @@ void menu::process_next_k_tasks() {
 
 void menu::search_task_by_id() {
     unsigned int id;
-    std::cout <<"Enter Id to search: ";
+    std::cout << "Enter ID to search: ";
     std::cin >> id;
 
     auto result = task_manager.searchTaskByID(id);
 
+    std::cout << "\n";
     if (result.has_value) {
         std::cout << "Task found: \n";
         std::cout << "ID: " << result->getId() << ", Description: " << result->getDescription() << ", Priority: " << result->getPriority() << "\n";
@@ -143,7 +149,7 @@ void menu::display_statistics() {
     std::cout << "Statistics: \n";
     std::cout << "Waiting tasks: " << stats.waitingTasks << "\n";
     std::cout << "Processed tasks: " << stats.processedTasks << "\n";
-    std::cout << "Successful undooperations: " << stats.successfulUndos << "\n";
+    std::cout << "Successful undo operations: " << stats.successfulUndos << "\n";
 
 }
 
