@@ -168,22 +168,26 @@ OUTPUT
 ## How to Compile and Run
 
 - A C++ compiler is necessary
+- CMake of version 3.14 or higher
 
 ### Instructions
 
-Navigate to the build folder and run the program:
-`cd build\EX`
-`EX.exe`
+While inside the main project folder (where this readme is located), run either:
 
-Or run it directly using the full path:
-`DSA_HW1\build\EX\EX.exe`
+`cmake --build build --target run_ex1`
 
-Repeat for both exercises directories and input the presented operations.
+In order to run and compile the Interactive Task Flow Manager from exercise 1
+
+Or:
+
+`cmake --build build --target run_ex2`
+
+In order to compile and run a test script of the Timeline Manager library from exercise 2
 
 ## Notes
 
 - Each exrcise uses one specific data structure and a custom data structure implementation
-- All cases were tested for both exercises for complete functionality
+- All cases were unit tested for both exercises for complete functionality
 - The code uses clases and separate header files for an organized structure
 - The exercises demonstrate the understanding and  use of data structures
 
