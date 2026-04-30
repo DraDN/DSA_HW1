@@ -39,11 +39,25 @@ tools::Queue<tfm::Task> tfm::TaskFlowManager::processNextTasks(unsigned int n) {
 }
 
 tools::Optional<tfm::Task> tfm::TaskFlowManager::undoLastProcessedTask() {
-    tools::Optional<Task> current = historyQueue.dequeue();
+    tools::Optional<Task> current;
+
+    while (!historyQueue.isEmpty()) {
+        current = historyQueue.dequeue();
+    }
 
     if (current == tools::nullopt) return tools::nullopt;
 
+    tools::Queue<Task> bucket;
+
+    while (!taskQueue.isEmpty()) {
+        bucket.enqueue(taskQueue.dequeue().value);
+    }
+
     taskQueue.enqueue(current.value);
+
+    while (!bucket.isEmpty()) {
+        taskQueue.enqueue(bucket.dequeue().value);
+    }
 
     statistics.waitingTasks++;
     statistics.processedTasks--;
