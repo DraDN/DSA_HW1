@@ -24,7 +24,7 @@ namespace tools {
         const T* operator->() const { return &value; }
 
         bool operator==(const Optional<T>& other) const {
-            return has_value == other.has_value() && (!has_value || value == other.value);
+            return has_value == other.has_value && (!has_value || value == other.value);
         }
 
         bool operator!=(const Optional<T>& other) const {
