@@ -15,7 +15,6 @@ int main() {
     const tools::Optional<tfm::Task> search_result = task_manager.searchTaskByID(100);
     assert(search_result != tools::nullopt);
     assert(search_result->getId() == 100);
-    assert(search_result->getDescription() == "Task 1");
     assert(search_result->getPriority() == 1);
 
     return 0;

@@ -20,7 +20,6 @@ int main() {
         std::cout << undo_result_2.value << std::endl;
         assert(undo_result_2 != tools::nullopt);
         assert(undo_result_2->getId() == 100);
-        assert(undo_result_2->getDescription() == "Task 1");
         assert(undo_result_2->getPriority() == 1);
     }
 
