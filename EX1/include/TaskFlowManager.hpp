@@ -29,6 +29,10 @@ namespace tfm {
                 strcpy(this->description, description);
             };
 
+            ~Task() {
+                delete[] description;
+            };
+
             unsigned int getId() const { return id; }
             const char* getDescription() const { return description; }
             short getPriority() const { return priority; }
